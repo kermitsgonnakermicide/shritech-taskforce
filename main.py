@@ -76,6 +76,10 @@ def returnAll():
         noExtension.append(temp)
     return jsonify(noExtension)
 
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify("Sorry, the given endpoint was not found. Please check your spelling and the documentation and try again ")
+
 app.register_blueprint(api, url_prefix="/api")
 
 if __name__ == '__main__':
