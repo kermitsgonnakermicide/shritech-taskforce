@@ -1,6 +1,6 @@
 import PIL.Image
 import flask
-from flask import Flask, jsonify, send_file, request
+from flask import *
 import random
 import os
 from flask_docs import *
@@ -32,8 +32,15 @@ def random_dish():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-@app.route('/add-dish', methods=['POST'])
+@app.route('/specific', methods=['POST'])
+def test():
+    v=request.args
 
+    if v["course"] == "dinner":
+        t=os.listdir(os.path.join(DISHES_DIR, "/dinner"))
+        print(t)
+        return flask.send_file(random.choice(t))
+    return "200"
 def add_dish():
 
     for file in request.files:
