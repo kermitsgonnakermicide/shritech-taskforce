@@ -33,10 +33,10 @@ def none():
 @api.route('/random-dish', methods=['GET'])
 def random_dish():
     """
-    Returns a random dish 
+    Returns a random dish
     """
     try:
-        dir = os.listdir(DISHES_DIR)
+        dir = os.listdir("all")
         print(random.choice(dir))
 
         return flask.send_file(os.path.join(DISHES_DIR, random.choice(dir)))
@@ -44,25 +44,28 @@ def random_dish():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-@api.route('/specific', methods=['POST'])
-def test():
+@api.route('/dish-course', methods=['GET'])
+def dishcourse():
     """
     Returns a specific course
     """
+
     try:
-        v=request.args()
-        if v["course"] == "dinner":
-            t=os.listdir(os.path.join(DISHES_DIR, "/dinner"))
+        v=request.headers["course"]
+        print(v)
+        if v == "dinner":
+            t=os.listdir("segregated/dinner")
             print(t)
-            return flask.send_file(random.choice(t))
-        if v["course"] == "lunch":
-            t=os.listdir(os.path.join(DISHES_DIR, "/lunch"))
+            z= "segregated/dinner/" + random.choice(t)
+            return flask.send_file(z)
+        if v == "lunch":
+            t = os.listdir("segregated/lunch")
             print(t)
-            return flask.send_file(random.choice(t))
-        if v["course"] == "breakfast":
-            t=os.listdir(os.path.join(DISHES_DIR, "/breakfast"))
+            return flask.send_file("segregated/lunch/" +random.choice(t))
+        if v == "breakfast":
+            t = os.listdir("segregated/breakfast")
             print(t)
-            return flask.send_file(random.choice(t))
+            return flask.send_file("segregated/breakfast/" + random.choice(t))
         else:
             return "401"
     except Exception as e:
