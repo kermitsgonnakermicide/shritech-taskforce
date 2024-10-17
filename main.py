@@ -49,36 +49,41 @@ def test():
     """
     Returns a specific course
     """
-    v=request.args()
-    if v["course"] == "dinner":
-        t=os.listdir(os.path.join(DISHES_DIR, "/dinner"))
-        print(t)
-        return flask.send_file(random.choice(t))
-    if v["course"] == "lunch":
-        t=os.listdir(os.path.join(DISHES_DIR, "/lunch"))
-        print(t)
-        return flask.send_file(random.choice(t))
-    if v["course"] == "breakfast":
-        t=os.listdir(os.path.join(DISHES_DIR, "/breakfast"))
-        print(t)
-        return flask.send_file(random.choice(t))
-    else:
-        return "401"
-
+    try:
+        v=request.args()
+        if v["course"] == "dinner":
+            t=os.listdir(os.path.join(DISHES_DIR, "/dinner"))
+            print(t)
+            return flask.send_file(random.choice(t))
+        if v["course"] == "lunch":
+            t=os.listdir(os.path.join(DISHES_DIR, "/lunch"))
+            print(t)
+            return flask.send_file(random.choice(t))
+        if v["course"] == "breakfast":
+            t=os.listdir(os.path.join(DISHES_DIR, "/breakfast"))
+            print(t)
+            return flask.send_file(random.choice(t))
+        else:
+            return "401"
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 @api.route('/all', methods=['GET'])
 def returnAll():
     """
     Returns ALL available dishes
     """
-    noExtension = []
-    for i in os.listdir('all'):
-        temp = i.removesuffix(".jpg")
-        noExtension.append(temp)
-    return jsonify(noExtension)
+    try:
+        noExtension = []
+        for i in os.listdir('all'):
+            temp = i.removesuffix(".jpg")
+            noExtension.append(temp)
+        return jsonify(noExtension)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.errorhandler(404)
 def not_found(e):
-    return jsonify("Sorry, the given endpoint was not found. Please check your spelling and the documentation and try again ")
+    return jsonify("Sorry, the given endpoint was not found. Please check your spelling and the documentation and try again")
 
 app.register_blueprint(api, url_prefix="/api")
 
