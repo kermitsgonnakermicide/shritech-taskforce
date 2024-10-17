@@ -8,21 +8,33 @@ from flask import *
 from PIL import *
 app = Flask(__name__)
 
+app.config["API_DOC_MEMBER"] = ["api"]
+
 app.config["API_DOC_URL_PREFIX"] = "/docs"
+app.config["API_DOC_METHODS_LIST"] = ["GET", "POST"]
 ApiDoc(
     app,
     title="Dish Server",
     version="1.0.0",
     description="A dish server",
 )
+
+api = flask.Blueprint("api", __name__)
+
 # Assume we have a directory called 'dishes' with images of dishes
-DISHES_DIR = 'dishes'
+DISHES_DIR = 'segregated'
 app.config['UPLOAD_FOLDER'] = DISHES_DIR
-@app.route("/*")
+@app.route("/api/*")
 def none():
+    """
+    Nothing to see here!
+    """
     return "This area does not exist"
-@app.route('/random-dish', methods=['GET'])
+@api.route('/random-dish', methods=['GET'])
 def random_dish():
+    """
+    Returns a random dish 
+    """
     try:
         dir = os.listdir(DISHES_DIR)
         print(random.choice(dir))
@@ -32,20 +44,39 @@ def random_dish():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-@app.route('/specific', methods=['POST'])
+@api.route('/specific', methods=['POST'])
 def test():
-    v=request.args
-
+    """
+    Returns a specific course
+    """
+    v=request.args()
     if v["course"] == "dinner":
         t=os.listdir(os.path.join(DISHES_DIR, "/dinner"))
         print(t)
         return flask.send_file(random.choice(t))
-    return "200"
-def add_dish():
+    if v["course"] == "lunch":
+        t=os.listdir(os.path.join(DISHES_DIR, "/lunch"))
+        print(t)
+        return flask.send_file(random.choice(t))
+    if v["course"] == "breakfast":
+        t=os.listdir(os.path.join(DISHES_DIR, "/breakfast"))
+        print(t)
+        return flask.send_file(random.choice(t))
+    else:
+        return "401"
 
-    for file in request.files:
-        print(str(file))
-    return "done"
+@api.route('/all', methods=['GET'])
+def returnAll():
+    """
+    Returns ALL available dishes
+    """
+    noExtension = []
+    for i in os.listdir('all'):
+        temp = i.removesuffix(".jpg")
+        noExtension.append(temp)
+    return jsonify(noExtension)
+
+app.register_blueprint(api, url_prefix="/api")
 
 if __name__ == '__main__':
     app.run(debug=True)
