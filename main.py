@@ -7,14 +7,14 @@ from flask_docs import *
 from flask import *
 from PIL import *
 app = Flask(__name__)
+
+app.config["API_DOC_URL_PREFIX"] = "/docs"
 ApiDoc(
     app,
     title="Dish Server",
     version="1.0.0",
-    description="A dish return"
-                "",
+    description="A dish server",
 )
-app.config["API_DOC_URL_PREFIX"] = "*"
 # Assume we have a directory called 'dishes' with images of dishes
 DISHES_DIR = 'dishes'
 app.config['UPLOAD_FOLDER'] = DISHES_DIR
@@ -35,6 +35,7 @@ def random_dish():
 @app.route('/add-dish', methods=['POST'])
 
 def add_dish():
+
     for file in request.files:
         print(str(file))
     return "done"
